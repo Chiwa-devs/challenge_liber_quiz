@@ -5,7 +5,7 @@ Hola Cristina,
 La idea es que lo analices, preguntanos lo que necesites, y cuando lo tengas poder presentarlo al equipo. 
 
 Pongo a Nico en copia también para que esté al tanto, quedamos en contacto y atentos a cuando nos digas que presentas. (Es importante una estimación aunque luego no se cumpla es para medir el análisis de estimación que haces)
-
+usar flutter_bloc y flutter_web
 Saludos.  
 \-------------------------------------------- Historias de Usuario \--------------------------------------------
 
