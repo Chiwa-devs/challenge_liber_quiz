@@ -45,7 +45,7 @@ class QuizCompletedScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
+                        color: Colors.black.withOpacity(0.2),
                         spreadRadius: 2,
                         blurRadius: 8,
                         offset: const Offset(0, 4),
@@ -95,7 +95,7 @@ class QuizCompletedScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: Colors.black.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 12,
                         offset: const Offset(0, 6),
@@ -113,7 +113,7 @@ class QuizCompletedScreen extends StatelessWidget {
                           gradient: LinearGradient(
                             colors: [
                               percentage >= 70 ? Colors.green : Colors.orange,
-                              percentage >= 70 ? Colors.green.withValues(alpha: 0.7) : Colors.orange.withValues(alpha: 0.7),
+                              percentage >= 70 ? Colors.green.withOpacity(0.7) : Colors.orange.withOpacity(0.7),
                             ],
                           ),
                         ),

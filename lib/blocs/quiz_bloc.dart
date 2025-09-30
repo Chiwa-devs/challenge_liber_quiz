@@ -39,7 +39,15 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
   Future<void> _onStartQuiz(StartQuiz event, Emitter<QuizState> emit) async {
     try {
+      print('Starting quiz for module: ${event.moduleId}');
       final questions = await _repository.getQuestionsByModule(event.moduleId);
+      print('Found ${questions.length} questions');
+
+      if (questions.isEmpty) {
+        emit(QuizError('No hay preguntas disponibles para este módulo'));
+        return;
+      }
+
       final session = QuizSession(
         userName: event.userName,
         moduleId: event.moduleId,
@@ -50,8 +58,10 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
       );
 
       final currentQuestion = questions.first;
+      print('First question: ${currentQuestion.questionText}');
       emit(QuizInProgress(session, currentQuestion));
     } catch (e) {
+      print('Error starting quiz: $e');
       emit(QuizError('Error starting quiz: $e'));
     }
   }

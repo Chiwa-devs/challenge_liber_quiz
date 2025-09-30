@@ -94,7 +94,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                                       Container(
                                         padding: const EdgeInsets.all(20),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF0175C2).withValues(alpha: 0.1),
+                                          color: const Color(0xFF0175C2).withOpacity(0.1),
                                           borderRadius: BorderRadius.circular(16),
                                         ),
                                         child: Row(
@@ -266,7 +266,7 @@ class _AdminActionButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -286,7 +286,7 @@ class _AdminActionButton extends StatelessWidget {
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
+                    color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(

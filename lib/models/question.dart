@@ -37,4 +37,27 @@ class Question extends Equatable {
       explanation: explanation ?? this.explanation,
     );
   }
+
+  // Método para convertir opciones a string para almacenamiento
+  String get optionsAsString => options.join(',');
+
+  // Factory method para crear desde string (útil para base de datos)
+  factory Question.fromStringOptions({
+    required String id,
+    required String moduleId,
+    required String questionText,
+    required String optionsString,
+    required int correctOptionIndex,
+    String? explanation,
+  }) {
+    final options = optionsString.split(',');
+    return Question(
+      id: id,
+      moduleId: moduleId,
+      questionText: questionText,
+      options: options,
+      correctOptionIndex: correctOptionIndex,
+      explanation: explanation,
+    );
+  }
 }

@@ -4,6 +4,7 @@ import 'package:challenge_liber_quiz/blocs/quiz_bloc.dart';
 import 'package:challenge_liber_quiz/blocs/quiz_event.dart';
 import 'package:challenge_liber_quiz/blocs/quiz_state.dart';
 import 'package:challenge_liber_quiz/models/module.dart';
+import 'package:challenge_liber_quiz/screens/quiz_screen.dart';
 
 class ModulesScreen extends StatelessWidget {
   final String userName;
@@ -38,8 +39,8 @@ class ModulesScreen extends StatelessWidget {
                         Container(
                           width: 50,
                           height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -57,7 +58,7 @@ class ModulesScreen extends StatelessWidget {
                                 'Hola,',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white.withValues(alpha: 0.8),
+                                    color: Colors.white.withOpacity(0.8),
                                 ),
                               ),
                               Text(
@@ -95,36 +96,52 @@ class ModulesScreen extends StatelessWidget {
                       topRight: Radius.circular(30),
                     ),
                   ),
-                  child: BlocBuilder<QuizBloc, QuizState>(
-                    builder: (context, state) {
-                      if (state is ModulesLoaded) {
-                        return Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: ListView.builder(
-                            itemCount: state.modules.length,
-                            itemBuilder: (context, index) {
-                              final module = state.modules[index];
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: ModuleCard(
-                                  module: module,
-                                  onTap: () {
-                                    context.read<QuizBloc>().add(SelectModule(module.id));
-                                  },
-                                ),
-                              );
-                            },
+                  child: BlocListener<QuizBloc, QuizState>(
+                    listener: (context, state) {
+                      print('State changed in ModulesScreen: ${state.runtimeType}');
+                      if (state is QuizInProgress) {
+                        print('Navigating to QuizScreen');
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const QuizScreen(),
                           ),
                         );
-                      } else if (state is ModuleSelected) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _showStartQuizDialog(context, state.module, userName);
-                        });
-                        return const Center(child: CircularProgressIndicator());
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is QuizCompleted) {
+                        print('Quiz completed, showing results');
+                        // El QuizScreen debería manejar automáticamente el estado QuizCompleted
                       }
                     },
+                    child: BlocBuilder<QuizBloc, QuizState>(
+                      builder: (context, state) {
+                        if (state is ModulesLoaded) {
+                          return Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: ListView.builder(
+                              itemCount: state.modules.length,
+                              itemBuilder: (context, index) {
+                                final module = state.modules[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: ModuleCard(
+                                    module: module,
+                                    onTap: () {
+                                      context.read<QuizBloc>().add(SelectModule(module.id));
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        } else if (state is ModuleSelected) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _showStartQuizDialog(context, state.module, userName);
+                          });
+                          return const Center(child: CircularProgressIndicator());
+                        } else {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -148,8 +165,8 @@ class ModulesScreen extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0175C2).withValues(alpha: 0.1),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0175C2).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -172,7 +189,7 @@ class ModulesScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0175C2).withValues(alpha: 0.1),
+                        color: const Color(0xFF0175C2).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -205,6 +222,7 @@ class ModulesScreen extends StatelessWidget {
               ),
               child: const Text('Comenzar'),
               onPressed: () {
+                print('Starting quiz for module: ${module.id}');
                 Navigator.of(context).pop();
                 context.read<QuizBloc>().add(StartQuiz(userName, module.id));
               },
@@ -234,7 +252,7 @@ class ModuleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -254,7 +272,7 @@ class ModuleCard extends StatelessWidget {
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0175C2).withValues(alpha: 0.1),
+                      color: const Color(0xFF0175C2).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
@@ -294,7 +312,7 @@ class ModuleCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0175C2).withValues(alpha: 0.1),
+                      color: const Color(0xFF0175C2).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

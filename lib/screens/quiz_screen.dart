@@ -50,7 +50,7 @@ class QuizScreen extends StatelessWidget {
                           Container(
                             height: 8,
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.3),
+                              color: Colors.white.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: FractionallySizedBox(
@@ -81,7 +81,7 @@ class QuizScreen extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.2),
+                                  color: Colors.white.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
@@ -171,7 +171,7 @@ class _QuizQuestionWidgetState extends State<QuizQuestionWidget> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Colors.black.withOpacity(0.05),
                   spreadRadius: 1,
                   blurRadius: 8,
                   offset: const Offset(0, 4),
@@ -222,32 +222,34 @@ class _QuizQuestionWidgetState extends State<QuizQuestionWidget> {
             const SizedBox(height: 20),
             Row(
               children: [
-                if (widget.session.currentQuestionIndex > 0)
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        context.read<QuizBloc>().add(PreviousQuestion());
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(color: Color(0xFF0175C2)),
-                        foregroundColor: Color(0xFF0175C2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Anterior',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                // Back to menu button (always available)
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      context.read<QuizBloc>().add(ResetQuiz());
+                      Navigator.of(context).pop();
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: Colors.grey),
+                      foregroundColor: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    child: const Text(
+                      'Volver al Menú',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ),
-                if (widget.session.currentQuestionIndex > 0) const SizedBox(width: 16),
+                ),
+                const SizedBox(width: 16),
                 Expanded(
-                  flex: widget.session.currentQuestionIndex > 0 ? 1 : 1,
                   child: ElevatedButton(
                     onPressed: selectedOption == null ? null : () {
-                      // Answer will be processed and next question will be shown automatically
+                      if (selectedOption != null) {
+                        context.read<QuizBloc>().add(AnswerQuestion(widget.question.id, selectedOption!));
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0175C2),
@@ -277,6 +279,7 @@ class _QuizQuestionWidgetState extends State<QuizQuestionWidget> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () {
+                  print('Resetting quiz and going back to menu');
                   context.read<QuizBloc>().add(ResetQuiz());
                   Navigator.of(context).pop();
                 },
@@ -336,7 +339,7 @@ class AnswerOptionWidget extends StatelessWidget {
       borderColor = Colors.red;
       textColor = Colors.red[800]!;
     } else if (isSelected) {
-      backgroundColor = const Color(0xFF0175C2).withValues(alpha: 0.1);
+  backgroundColor = const Color(0xFF0175C2).withOpacity(0.1);
       borderColor = const Color(0xFF0175C2);
     }
 
@@ -367,7 +370,7 @@ class AnswerOptionWidget extends StatelessWidget {
                       color: isSelected || isCorrect || isIncorrect ? borderColor : Colors.grey[400]!,
                       width: 2,
                     ),
-                    color: (isSelected || isCorrect || isIncorrect) ? borderColor.withValues(alpha: 0.1) : Colors.transparent,
+                    color: (isSelected || isCorrect || isIncorrect) ? borderColor.withOpacity(0.1) : Colors.transparent,
                   ),
                   child: (isSelected || isCorrect || isIncorrect)
                       ? Center(

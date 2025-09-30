@@ -24,15 +24,41 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
 
   String? _selectedModuleId;
   int? _correctOptionIndex;
+  bool _isFormValid = false;
 
   @override
-  void dispose() {
-    _questionController.dispose();
-    _option1Controller.dispose();
-    _option2Controller.dispose();
-    _option3Controller.dispose();
-    _option4Controller.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _updateFormValidation();
+    // Add listeners to update validation when fields change
+    _questionController.addListener(_updateFormValidation);
+    _option1Controller.addListener(_updateFormValidation);
+    _option2Controller.addListener(_updateFormValidation);
+    _option3Controller.addListener(_updateFormValidation);
+    _option4Controller.addListener(_updateFormValidation);
+  }
+
+  void _updateFormValidation() {
+    // Check if form is valid without calling validate() during build
+    final hasQuestion = _questionController.text.trim().isNotEmpty;
+    final hasOption1 = _option1Controller.text.trim().isNotEmpty;
+    final hasOption2 = _option2Controller.text.trim().isNotEmpty;
+    final hasOption3 = _option3Controller.text.trim().isNotEmpty;
+    final hasOption4 = _option4Controller.text.trim().isNotEmpty;
+
+    final isFormValidLocal = hasQuestion &&
+        hasOption1 &&
+        hasOption2 &&
+        hasOption3 &&
+        hasOption4 &&
+        _selectedModuleId != null &&
+        _correctOptionIndex != null;
+
+    if (isFormValidLocal != _isFormValid) {
+      setState(() {
+        _isFormValid = isFormValidLocal;
+      });
+    }
   }
 
   @override
@@ -136,7 +162,7 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withValues(alpha: 0.1),
+                    color: Colors.amber.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.amber, width: 1),
                   ),
@@ -146,7 +172,7 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                       SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Nota: Las preguntas que añadas se guardarán solo para esta sesión.',
+                          'Nota: Las preguntas que añadas se guardarán permanentemente en la aplicación.',
                           style: TextStyle(
                             color: Colors.amber,
                             fontSize: 14,
@@ -197,6 +223,7 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                   onChanged: (value) {
                     setState(() {
                       _selectedModuleId = value;
+                      _updateFormValidation();
                     });
                   },
                   validator: (value) {
@@ -316,15 +343,12 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                   },
                   builder: (context, state) {
                     final isLoading = state is AdminLoading;
-                    final isFormValid = _formKey.currentState?.validate() == true &&
-                        _selectedModuleId != null &&
-                        _correctOptionIndex != null;
 
                     return SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: isLoading || !isFormValid ? null : _submitForm,
+                        onPressed: isLoading || !_isFormValid ? null : _submitForm,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF0175C2),
                           foregroundColor: Colors.white,
@@ -396,6 +420,7 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
         onTap: () {
           setState(() {
             _correctOptionIndex = value;
+            _updateFormValidation();
           });
         },
         child: Container(
@@ -428,7 +453,12 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
   }
 
   void _submitForm() {
-    if (_formKey.currentState!.validate() && _selectedModuleId != null && _correctOptionIndex != null) {
+    // Final validation before submitting
+    if (_formKey.currentState!.validate() &&
+        _selectedModuleId != null &&
+        _correctOptionIndex != null &&
+        _isFormValid) {
+
       final options = [
         _option1Controller.text.trim(),
         _option2Controller.text.trim(),

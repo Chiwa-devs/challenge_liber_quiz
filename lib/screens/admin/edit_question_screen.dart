@@ -25,6 +25,7 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
 
   String? _selectedModuleId;
   int? _correctOptionIndex;
+  bool _isFormValid = false;
 
   @override
   void initState() {
@@ -36,6 +37,37 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
     _option4Controller = TextEditingController(text: widget.question.options[3]);
     _selectedModuleId = widget.question.moduleId;
     _correctOptionIndex = widget.question.correctOptionIndex;
+
+    _updateFormValidation();
+    // Add listeners to update validation when fields change
+    _questionController.addListener(_updateFormValidation);
+    _option1Controller.addListener(_updateFormValidation);
+    _option2Controller.addListener(_updateFormValidation);
+    _option3Controller.addListener(_updateFormValidation);
+    _option4Controller.addListener(_updateFormValidation);
+  }
+
+  void _updateFormValidation() {
+    // Check if form is valid without calling validate() during build
+    final hasQuestion = _questionController.text.trim().isNotEmpty;
+    final hasOption1 = _option1Controller.text.trim().isNotEmpty;
+    final hasOption2 = _option2Controller.text.trim().isNotEmpty;
+    final hasOption3 = _option3Controller.text.trim().isNotEmpty;
+    final hasOption4 = _option4Controller.text.trim().isNotEmpty;
+
+    final isFormValidLocal = hasQuestion &&
+        hasOption1 &&
+        hasOption2 &&
+        hasOption3 &&
+        hasOption4 &&
+        _selectedModuleId != null &&
+        _correctOptionIndex != null;
+
+    if (isFormValidLocal != _isFormValid) {
+      setState(() {
+        _isFormValid = isFormValidLocal;
+      });
+    }
   }
 
   @override
@@ -183,6 +215,7 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
                   onChanged: (value) {
                     setState(() {
                       _selectedModuleId = value;
+                      _updateFormValidation();
                     });
                   },
                   validator: (value) {
@@ -325,12 +358,9 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
                         },
                         builder: (context, state) {
                           final isLoading = state is AdminLoading;
-                          final isFormValid = _formKey.currentState?.validate() == true &&
-                              _selectedModuleId != null &&
-                              _correctOptionIndex != null;
 
                           return ElevatedButton(
-                            onPressed: isLoading || !isFormValid ? null : _submitForm,
+                            onPressed: isLoading || !_isFormValid ? null : _submitForm,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF0175C2),
                               foregroundColor: Colors.white,
@@ -405,13 +435,14 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
         onTap: () {
           setState(() {
             _correctOptionIndex = value;
+            _updateFormValidation();
           });
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: _correctOptionIndex == value
-                ? const Color(0xFF0175C2).withValues(alpha: 0.1)
+                ? const Color(0xFF0175C2).withOpacity(0.1)
                 : Colors.grey[100],
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
@@ -437,7 +468,12 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
   }
 
   void _submitForm() {
-    if (_formKey.currentState!.validate() && _selectedModuleId != null && _correctOptionIndex != null) {
+    // Final validation before submitting
+    if (_formKey.currentState!.validate() &&
+        _selectedModuleId != null &&
+        _correctOptionIndex != null &&
+        _isFormValid) {
+
       final options = [
         _option1Controller.text.trim(),
         _option2Controller.text.trim(),

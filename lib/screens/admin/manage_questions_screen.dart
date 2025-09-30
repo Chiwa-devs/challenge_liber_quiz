@@ -294,7 +294,7 @@ class _QuestionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -351,7 +351,7 @@ class _QuestionCard extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isCorrect
-                      ? Colors.green.withValues(alpha: 0.1)
+                      ? Colors.green.withOpacity(0.1)
                       : Colors.grey[50],
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
